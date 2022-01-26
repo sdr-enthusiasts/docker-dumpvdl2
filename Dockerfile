@@ -23,8 +23,6 @@ RUN set -x && \
     TEMP_PACKAGES+=(automake) && \
     TEMP_PACKAGES+=(autoconf) && \
     TEMP_PACKAGES+=(wget) && \
-    # required for startup checks
-    KEPT_PACKAGES+=(bc) && \
     # packages for dumpvdl2
     TEMP_PACKAGES+=(libglib2.0-dev) && \
     KEPT_PACKAGES+=(libglib2.0-0) && \
