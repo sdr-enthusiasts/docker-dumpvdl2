@@ -28,10 +28,7 @@ function get_pid_of_decoder {
   eval "$(grep "VDLM_BIN=\"" "$service_dir"/run)"
 
   # Get PS output for the relevant process
-  if [[ -n "$ACARS_BIN" ]]; then
-    # shellcheck disable=SC2009
-    ps_output=$(ps aux | grep "$ACARS_BIN" | grep " -r $DEVICE_ID " | grep " $FREQS_ACARS")
-  elif [[ -n "$VDLM_BIN" ]]; then
+  if [[ -n "$VDLM_BIN" ]]; then
     # shellcheck disable=SC2009
     ps_output=$(ps aux | grep "$VDLM_BIN" | grep " --rtlsdr $DEVICE_ID " | grep " $FREQS_VDLM")
   fi
