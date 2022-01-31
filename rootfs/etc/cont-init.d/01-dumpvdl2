@@ -73,11 +73,15 @@ done
 
 if [[ -z "${OUTPUT_DEVICE_ID}" ]]; then
 	echo "Could not find device ID for serial '$SERIAL'"
-	exit 1
 fi
 
 rm -rf /etc/services.d/dumpvdl2/run > /dev/null 2>&1
-cp /etc/templates/run /etc/services.d/dumpvdl2/run
+if [[ -n "${OUTPUT_DEVICE_ID}" ]]; then
+	cp /etc/templates/run /etc/services.d/dumpvdl2/run
+else
+	cp /etc/templates/bad /etc/services.d/dumpvdl2/run
+fi
+
 s6-chmod 0755 /etc/services.d/dumpvdl2/run
 
 mkdir -p /run/acars
