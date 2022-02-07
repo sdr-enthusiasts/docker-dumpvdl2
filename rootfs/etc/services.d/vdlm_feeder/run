@@ -6,7 +6,7 @@ set -o pipefail
 # Require that vdlm_server is running
 if ! netstat -an | grep -P '^\s*tcp\s+\d+\s+\d+\s+0\.0\.0\.0:15555\s+(?>\d{1,3}\.{0,1}){4}:\*\s+LISTEN\s*$' > /dev/null; then
   sleep 1
-  if [[ -z "${QUIET_LOGS}" ]]; then
+  if [[ ! ${QUIET_LOGS,,} =~ true ]]; then
     echo "[vdlm_feeder] vdlm_server not running, exiting"
   fi
   exit
