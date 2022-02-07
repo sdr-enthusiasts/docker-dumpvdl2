@@ -59,4 +59,4 @@ services:
 | `SERVER` | The server where messages will be forwarded to. | No | Blank |
 | `SERVER_PORT` | The port where the server will receive messages on. | No | `5555` |
 | `VDLM_FILTER_ENABLE` | Filter out non-informational messages. Turning this off (set to a blank value) will cause increased message rate but the messages will be of little value. Will cause extra SD card read/writes. | No | `TRUE` |
-| `QUIET_LOGS` | Mute log output to the bare minimum. Set to a blank value to disable.| No | `TRUE` |
+| `QUIET_LOGS` | Mute log output to the bare minimum. Set to `false` to disable. | No | `TRUE` |
