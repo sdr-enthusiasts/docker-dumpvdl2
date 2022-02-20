@@ -39,6 +39,12 @@ fi
 
 VDLM_CMD+=("--station-id=$FEED_ID" "--output" "decoded:json:udp:address=127.0.0.1,port=5555")
 
+if [[ -n "$ZMQ_MODE" ]]; then
+  if [[ -n "$ZMQ_ENDPOINT" ]]; then
+    VDLM_CMD+=("--output" "decoded:json:zmq:mode=${ZMQ_MODE,,},endpoint=${ZMQ_ENDPOINT}")
+  fi
+fi
+
 # if [ -z "${QUIET_MESSAGES}" ]; then
 #   VDLM_CMD+=("--output" "decoded:text:file:path=-")
 # fi
