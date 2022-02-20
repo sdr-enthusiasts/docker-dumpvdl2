@@ -54,6 +54,20 @@ if [[ -z "${SERIAL}" ]]; then
 	exit 1
 fi
 
+if [[ -n "$ZMQ_MODE" ]]; then
+  if [[ -z "$ZMQ_ENDPOINT" ]]; then
+	echo "ZMQ_MODE mode set to '${ZMQ_MODE}, but ZMQ_ENDPOINT is not set, exiting"
+	exit 1
+  fi
+fi
+
+if [[ -n "$ZMQ_ENDPOINT" ]]; then
+  if [[ -z "$ZMQ_MODE" ]]; then
+    echo "ZMQ_ENDPOINT mode set to '${ZMQ_ENDPOINT}, but ZMQ_MODE is not set, exiting"
+	exit 1
+  fi
+fi
+
 RTL_TEST_OUTPUT=$(timeout 1s rtl_test -d 0 2>&1 | grep -P '^\s+\d+:\s+\S+?,\s+\S+?,\s+SN:\s+\S+?\s*$' || true)
 
 IFS=$'\n'
