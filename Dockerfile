@@ -26,21 +26,21 @@ RUN set -x && \
     # packages for dumpvdl2
     TEMP_PACKAGES+=(libglib2.0-dev) && \
     KEPT_PACKAGES+=(libglib2.0-0) && \
+    TEMP_PACKAGES+=(libzmq3-dev) && \
+    KEPT_PACKAGES+=(libzmq5) && \
     # install packages
     apt-get update && \
     apt-get install -y --no-install-recommends \
         "${KEPT_PACKAGES[@]}" \
         "${TEMP_PACKAGES[@]}"\
         && \
-    pushd /src/ && \
-    git clone https://github.com/szpajder/dumpvdl2.git && \
-    pushd dumpvdl2 && \
-    mkdir build && \
-    pushd build && \
+    git clone https://github.com/szpajder/dumpvdl2.git /src/dumpvdl2 && \
+    mkdir -p /src/dumpvdl2/build && \
+    pushd /src/dumpvdl2/build && \
     cmake ../ && \
-    make && \
+    make -j "$(nproc)" && \
     make install && \
-    popd && popd && \
+    popd && \
     # Clean up
     apt-get remove -y "${TEMP_PACKAGES[@]}" && \
     apt-get autoremove -y && \
