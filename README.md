@@ -60,3 +60,5 @@ services:
 | `SERVER_PORT` | The port where the server will receive messages on. | No | `5555` |
 | `VDLM_FILTER_ENABLE` | Filter out non-informational messages. Turning this off (set to a blank value) will cause increased message rate but the messages will be of little value. Will cause extra SD card read/writes. | No | `TRUE` |
 | `QUIET_LOGS` | Mute log output to the bare minimum. Set to `false` to disable. | No | `TRUE` |
+| `ZMQ_MODE` | Output to [zmq](https://zeromq.org) publisher socket. This sets the mode to `client` or `server`. | No | |
+| `ZMQ_ENDPOINT` | Output to [zmq](https://zeromq.org) publisher socket. This sets the `endpoint`. Syntax is `tcp://address:port` | No | |
