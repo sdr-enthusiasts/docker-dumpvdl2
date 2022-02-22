@@ -20,24 +20,25 @@ read -ra SPLIT_FREQS <<< "${FREQUENCIES}"
 
 # loop through SPLIT_FREQS
 
-# We can only have 6 total frequencies
+# We can only have 8 total frequencies
 
 if [[ "${#SPLIT_FREQS[@]}" -gt 8 ]]; then
-	echo "FREQUENCIES is too long, exiting"
+	echo "FREQUENCIES may not contain more than 8 frequencies, exiting"
 	exit 1
 fi
 
-# FREQUENCIES needs to be in the range of 118.0 - 137.0.
+# FREQUENCIES needs to be in the range of 118000000 (118 MHz) - 137000000 (137 MHz).
+# Acceptable format is either in Hz (dumpvdl2 default) or in MHz (as with acarsdec)
 
 FREQ_STRING=""
 for i in "${SPLIT_FREQS[@]}"
 do
-:
-if [[ $(echo "$i > 118000000" | bc)  -eq 0 || $(echo "$i < 137000000" | bc) -eq 0 ]]; then
-	echo "FREQUENCY $i is not in the range of 118000000 - 137000000, exiting"
-	exit 1
-fi
-FREQ_STRING+="$i "
+	[[ "$i" == *"."* ]] && j="${i/./}000" || j="$i" # convert xxx.xxx (MHz) into Hertz yyyyyy000 if needed
+	if [[ $(echo "$j > 118000000" | bc)  -eq 0 || $(echo "$j < 137000000" | bc) -eq 0 ]]; then
+		echo "FREQUENCY $i is not in the range of 118000000 - 137000000 or 118.0 - 137.0, exiting"
+		exit 1
+	fi
+	FREQ_STRING+="$j "
 done
 
 # Make sure mode is valid
@@ -68,25 +69,14 @@ if [[ -n "$ZMQ_ENDPOINT" ]]; then
   fi
 fi
 
-RTL_TEST_OUTPUT=$(timeout 1s rtl_test -d 0 2>&1 | grep -P '^\s+\d+:\s+\S+?,\s+\S+?,\s+SN:\s+\S+?\s*$' || true)
-
-IFS=$'\n'
-for RTL_TEST_OUTPUT_LINE in $RTL_TEST_OUTPUT; do
-	# Unset variables in case any regexes fail
-	unset RTL_DEVICE_ID RTL_DEVICE_MAKE RTL_DEVICE_MODEL RTL_DEVICE_SERIAL
-
-	# Pull variables from output via regex
-	RTL_DEVICE_NUMBER=$(echo "$RTL_TEST_OUTPUT_LINE" | grep -oP '^\s+\K\d+(?=:\s+\S+?,\s+\S+?,\s+SN:\s+\S+?\s*$)')
-	RTL_DEVICE_SERIAL=$(echo "$RTL_TEST_OUTPUT_LINE" | grep -oP '^\s+\d+:\s+\S+?,\s+\S+?,\s+SN:\s+\K\S+?(?=\s*$)')
-
-	# See if we've found the device we're looking for
-	if [[ -n "$SERIAL" && "$SERIAL" == "$RTL_DEVICE_SERIAL" ]]; then
-		OUTPUT_DEVICE_ID="$RTL_DEVICE_NUMBER"
-	fi
+IFS=$'\n' RTL_TEST_OUTPUT=( $(timeout 1s rtl_test -d 0 2>&1 | grep -P '^\s+\d+:\s.*?,.*?,\s+SN:\s+.*?$' | IFS=$'\n' sed -n 's/^\s*\([^:]*\):[^,]*,[^,]*,\s*SN:\s*\(.*\)$/\1,\2/; s/\s*$//p' || true) )
+for RTL_TEST_OUTPUT_LINE in ${RTL_TEST_OUTPUT[@]}; do
+        [[ "${RTL_TEST_OUTPUT_LINE##*,}" == "$SERIAL" ]] && OUTPUT_DEVICE_ID="${RTL_TEST_OUTPUT_LINE%%,*}" || true
 done
 
 if [[ -z "${OUTPUT_DEVICE_ID}" ]]; then
-	echo "Could not find device ID for serial '$SERIAL'"
+        echo "Could not find Device ID for serial '$SERIAL'"
+        exit 1
 fi
 
 rm -rf /etc/services.d/dumpvdl2/run > /dev/null 2>&1
