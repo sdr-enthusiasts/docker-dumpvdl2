@@ -20,6 +20,12 @@ VDLM_CMD=()
 # Specify device ID
 if [ -n "${DEVICE_ID}" ]; then
 	VDLM_CMD+=("--rtlsdr" "$DEVICE_ID")
+elif [ -n "${SOAPYSDR}" ]; then
+	VDLM_CMD+=("--soapysdr" "$SOAPYSDR")
+fi
+
+if [ -n "$CENTER_FREQ" ]; then
+    VDLM_CMD+=("--centerfreq" "$CENTER_FREQ")
 fi
 
 if [ -z "$GAIN" ]; then
