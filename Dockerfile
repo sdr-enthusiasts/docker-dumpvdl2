@@ -12,6 +12,8 @@ ENV DEVICE_INDEX="" \
     SERVER_PORT="5555" \
     VDLM_FILTER_ENABLE="TRUE"
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # hadolint ignore=DL3008,SC2086,SC2039
 RUN set -x && \
     TEMP_PACKAGES=() && \
