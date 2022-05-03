@@ -26,6 +26,10 @@ if [ -z "$GAIN" ]; then
     GAIN="40"
 fi
 
+if [ -n "$OVERSAMPLE" ]; then
+    VDLM_CMD+=("--oversample" "$OVERSAMPLE")
+fi
+
 if [ -n "${PPM}" ]; then
 	VDLM_CMD+=("--correction" "$PPM")
 fi
