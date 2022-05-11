@@ -7,11 +7,14 @@ ENV DEVICE_INDEX="" \
     PPM="0"\
     GAIN="40" \
     SERIAL="" \
+    SOAPYSDR="" \
     SERVER="acarshub" \
     SERVER_PORT="5555" \
     VDLM_FILTER_ENABLE="TRUE"
 
-# hadolint ignore=DL3008,SC2086,SC2039,SC3054
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# hadolint ignore=DL3008,SC2086,SC2039
 RUN set -x && \
     TEMP_PACKAGES=() && \
     KEPT_PACKAGES=() && \
@@ -34,6 +37,30 @@ RUN set -x && \
     "${KEPT_PACKAGES[@]}" \
     "${TEMP_PACKAGES[@]}"\
     && \
+    # Deploy SoapySDR
+    git clone https://github.com/pothosware/SoapySDR.git /src/SoapySDR && \
+    pushd /src/SoapySDR && \
+    BRANCH_SOAPYSDR=$(git tag --sort="creatordate" | tail -1) && \
+    git checkout "$BRANCH_SOAPYSDR" && \
+    mkdir -p /src/SoapySDR/build && \
+    pushd /src/SoapySDR/build && \
+    cmake ../ -DCMAKE_BUILD_TYPE=Release && \
+    make all && \
+    make test && \
+    make install && \
+    popd && popd && \
+    ldconfig && \
+    # Deploy SoapyRTLTCP
+    git clone https://github.com/pothosware/SoapyRTLTCP.git /src/SoapyRTLTCP && \
+    pushd /src/SoapyRTLTCP && \
+    mkdir -p /src/SoapyRTLTCP/build && \
+    pushd /src/SoapyRTLTCP/build && \
+    cmake ../ -DCMAKE_BUILD_TYPE=Release && \
+    make all && \
+    make install && \
+    popd && popd && \
+    ldconfig && \
+    # Install dumpvdl2
     git clone https://github.com/szpajder/dumpvdl2.git /src/dumpvdl2 && \
     mkdir -p /src/dumpvdl2/build && \
     pushd /src/dumpvdl2/build && \

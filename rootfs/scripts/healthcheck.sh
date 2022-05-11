@@ -29,8 +29,13 @@ function get_pid_of_decoder {
 
   # Get PS output for the relevant process
   if [[ -n "$VDLM_BIN" ]]; then
-    # shellcheck disable=SC2009
-    ps_output=$(ps aux | grep "$VDLM_BIN" | grep " --rtlsdr $DEVICE_ID " | grep " $FREQS_VDLM")
+    if [[ -n "$DEVICE_ID" ]]; then
+      # shellcheck disable=SC2009
+      ps_output=$(ps aux | grep "$VDLM_BIN" | grep " --rtlsdr $DEVICE_ID " | grep " $FREQS_VDLM")
+    elif [[ -n "$SOAPYSDR" ]]; then
+      # shellcheck disable=SC2009
+      ps_output=$(ps aux | grep "$VDLM_BIN" | grep " --soapysdr $SOAPYSDR " | grep " $FREQS_VDLM")
+    fi
   fi
 
   # Find the PID of the decoder based on command line

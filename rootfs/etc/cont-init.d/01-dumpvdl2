@@ -48,13 +48,6 @@ if [[ -n "${SERVER}" && -z "${SERVER_PORT}" ]]; then
 	exit 1
 fi
 
-# DEVICE_ID or SERIAL needs to be set
-
-if [[ -z "${SERIAL}" ]]; then
-	echo "SERIAL is not set, exiting"
-	exit 1
-fi
-
 if [[ -n "$ZMQ_MODE" ]]; then
   if [[ -z "$ZMQ_ENDPOINT" ]]; then
 	echo "ZMQ_MODE mode set to '${ZMQ_MODE}, but ZMQ_ENDPOINT is not set, exiting"
@@ -69,23 +62,38 @@ if [[ -n "$ZMQ_ENDPOINT" ]]; then
   fi
 fi
 
-mapfile -t RTL_TEST_OUTPUT < <(timeout 1s rtl_test -d 0 2>&1 | grep -P '^\s+\d+:\s.*?,.*?,\s+SN:\s+.*?$' | IFS=$'\n' sed -n 's/^\s*\([^:]*\):[^,]*,[^,]*,\s*SN:\s*\(.*\)$/\1,\2/; s/\s*$//p' || true)  
-for RTL_TEST_OUTPUT_LINE in "${RTL_TEST_OUTPUT[@]}"; do
-        if [[ "${RTL_TEST_OUTPUT_LINE##*,}" == "$SERIAL" ]]; then
-                OUTPUT_DEVICE_ID="${RTL_TEST_OUTPUT_LINE%%,*}"
-        fi
-done
+if [[ -n "${SERIAL}" ]]; then
+	mapfile -t RTL_TEST_OUTPUT < <(timeout 1s rtl_test -d 0 2>&1 | grep -P '^\s+\d+:\s.*?,.*?,\s+SN:\s+.*?$' | IFS=$'\n' sed -n 's/^\s*\([^:]*\):[^,]*,[^,]*,\s*SN:\s*\(.*\)$/\1,\2/; s/\s*$//p' || true)
+	for RTL_TEST_OUTPUT_LINE in "${RTL_TEST_OUTPUT[@]}"; do
+			if [[ "${RTL_TEST_OUTPUT_LINE##*,}" == "$SERIAL" ]]; then
+					OUTPUT_DEVICE_ID="${RTL_TEST_OUTPUT_LINE%%,*}"
+			fi
+	done
 
-if [[ -z "${OUTPUT_DEVICE_ID}" ]]; then
-        echo "Could not find Device ID for serial '$SERIAL'"
-        exit 1
-fi
+	if [[ -z "${OUTPUT_DEVICE_ID}" ]]; then
+			echo "Could not find Device ID for serial '$SERIAL'"
+			exit 1
+	fi
 
-rm -rf /etc/services.d/dumpvdl2/run > /dev/null 2>&1
-if [[ -n "${OUTPUT_DEVICE_ID}" ]]; then
-	cp /etc/templates/run /etc/services.d/dumpvdl2/run
+	rm -rf /etc/services.d/dumpvdl2/run > /dev/null 2>&1
+	if [[ -n "${OUTPUT_DEVICE_ID}" ]]; then
+		cp /etc/templates/run /etc/services.d/dumpvdl2/run
+	else
+		cp /etc/templates/bad /etc/services.d/dumpvdl2/run
+	fi
+
+	sed -i "s/DEVICE_ID=\"\"/DEVICE_ID=\"$OUTPUT_DEVICE_ID\"/g" /etc/services.d/dumpvdl2/run
+elif [[ -n "${SOAPYSDR}" ]]; then
+	if ! SoapySDRUtil --probe="${SOAPYSDR}"; then
+		echo "Could not find SoapySDR device for '$SOAPYSDR'"
+		cp /etc/templates/bad /etc/services.d/dumpvdl2/run
+		exit 1
+	else
+		cp /etc/templates/run /etc/services.d/dumpvdl2/run
+	fi
 else
-	cp /etc/templates/bad /etc/services.d/dumpvdl2/run
+	echo "One of SERIAL or SOAPYSDR is not set, exiting"
+	exit 1
 fi
 
 s6-chmod 0755 /etc/services.d/dumpvdl2/run
@@ -93,7 +101,6 @@ s6-chmod 0755 /etc/services.d/dumpvdl2/run
 mkdir -p /run/acars
 touch /run/acars/vdlm.past5min.json
 
-sed -i "s/DEVICE_ID=\"\"/DEVICE_ID=\"$OUTPUT_DEVICE_ID\"/g" /etc/services.d/dumpvdl2/run
 sed -i "s/FREQ_STRING=\"\"/FREQ_STRING=\"$FREQ_STRING\"/g" /etc/services.d/dumpvdl2/run
 
 # Everything is good to go. Exit with 0
