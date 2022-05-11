@@ -56,6 +56,7 @@ services:
 | `FREQUENCIES` | Colon-separated list of frequencies, but to a maximum of 8, for the decoder to list to. No decimal, and all frequencies should be nine digits long. | Yes | Blank |
 | `PPM` | Parts per million correction of the decoder | No | 0 |
 | `GAIN`| The gain applied to the RTL-SDR dongle. | No | `40` |
+| `OVERSAMPLE`| Overrides the default oversampling rate used by dumpvdl2. | No | Blank |
 | `SERVER` | The server where messages will be forwarded to. | No | Blank |
 | `SERVER_PORT` | The port where the server will receive messages on. | No | `5555` |
 | `VDLM_FILTER_ENABLE` | Filter out non-informational messages. Turning this off (set to a blank value) will cause increased message rate but the messages will be of little value. Will cause extra SD card read/writes. | No | `TRUE` |
