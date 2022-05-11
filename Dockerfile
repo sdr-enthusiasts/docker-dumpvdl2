@@ -11,7 +11,7 @@ ENV DEVICE_INDEX="" \
     SERVER_PORT="5555" \
     VDLM_FILTER_ENABLE="TRUE"
 
-# hadolint ignore=DL3008,SC2086,SC2039
+# hadolint ignore=DL3008,SC2086,SC2039,SC3054
 RUN set -x && \
     TEMP_PACKAGES=() && \
     KEPT_PACKAGES=() && \
@@ -31,9 +31,9 @@ RUN set -x && \
     # install packages
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        "${KEPT_PACKAGES[@]}" \
-        "${TEMP_PACKAGES[@]}"\
-        && \
+    "${KEPT_PACKAGES[@]}" \
+    "${TEMP_PACKAGES[@]}"\
+    && \
     git clone https://github.com/szpajder/dumpvdl2.git /src/dumpvdl2 && \
     mkdir -p /src/dumpvdl2/build && \
     pushd /src/dumpvdl2/build && \

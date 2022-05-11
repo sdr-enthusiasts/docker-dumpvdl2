@@ -62,3 +62,7 @@ services:
 | `QUIET_LOGS` | Mute log output to the bare minimum. Set to `false` to disable. | No | `TRUE` |
 | `ZMQ_MODE` | Output to [zmq](https://zeromq.org) publisher socket. This sets the mode to `client` or `server`. | No | |
 | `ZMQ_ENDPOINT` | Output to [zmq](https://zeromq.org) publisher socket. This sets the `endpoint`. Syntax is `tcp://address:port` | No | |
+
+## `acars_router` Note
+
+If you are running `acars_router` you will likely want to set `SERVER` to a blank value. If you do not, and `SERVER` is the default value or an IP/URL that is an acars_hub instance, you will receive duplicate messages!
