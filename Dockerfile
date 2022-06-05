@@ -64,7 +64,8 @@ RUN set -x && \
     git clone https://github.com/szpajder/dumpvdl2.git /src/dumpvdl2 && \
     mkdir -p /src/dumpvdl2/build && \
     pushd /src/dumpvdl2/build && \
-    cmake ../ && \
+    # cmake ../ && \
+    cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo && \
     make -j "$(nproc)" && \
     make install && \
     popd && \
