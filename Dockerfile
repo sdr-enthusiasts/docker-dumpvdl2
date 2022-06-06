@@ -31,6 +31,8 @@ RUN set -x && \
     KEPT_PACKAGES+=(libglib2.0-0) && \
     TEMP_PACKAGES+=(libzmq3-dev) && \
     KEPT_PACKAGES+=(libzmq5) && \
+    # packages for JSON processing
+    TEMP_PACKAGES+=(jq) && \
     # install packages
     apt-get update && \
     apt-get install -y --no-install-recommends \
