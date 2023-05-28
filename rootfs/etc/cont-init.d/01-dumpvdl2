@@ -74,7 +74,7 @@ if [[ -n "${SERIAL}" ]]; then
 		cp /etc/templates/bad /etc/services.d/dumpvdl2/run
 	fi
 
-	sed -i "s/DEVICE_ID=\"\"/DEVICE_ID=\"$OUTPUT_DEVICE_ID\"/g" /etc/services.d/dumpvdl2/run
+	#sed -i "s/DEVICE_ID=\"\"/DEVICE_ID=\"$OUTPUT_DEVICE_ID\"/g" /etc/services.d/dumpvdl2/run
 elif [[ -n "${SOAPYSDR}" ]]; then
 	if ! SoapySDRUtil --probe="${SOAPYSDR}"; then
 		echo "Could not find SoapySDR device for '$SOAPYSDR'"
