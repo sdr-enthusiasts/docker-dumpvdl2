@@ -15,6 +15,7 @@ VDLM_BIN="/usr/local/bin/dumpvdl2"
 # shellcheck disable=SC2001
 FREQ_STRING=""
 VDLM_CMD=()
+DEVICE_ID=""
 
 # Specify device ID
 if [ -n "${SOAPYSDR}" ]; then

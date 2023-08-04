@@ -49,7 +49,7 @@ function get_pid_of_decoder {
 # ===== Check dummpvdl2 processes =====
 
 # For each service...
-for service_dir in /etc/services.d/*; do
+for service_dir in /run/s6/legacy-services/*; do
   service_name=$(basename "$service_dir")
 
   # If the service is dumpvdlm2-*...
