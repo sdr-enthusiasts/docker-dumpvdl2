@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/command/with-contenv bash
 # shellcheck shell=bash
 
 # Import healthchecks-framework
@@ -19,13 +19,13 @@ function get_pid_of_decoder {
   unset DEVICE_ID FREQS_VDLM VDLM_BIN FREQS_ACARS ACARS_BIN
 
   # Get DEVICE_ID
-  eval "$(grep "DEVICE_ID=\"" "$service_dir"/run)"
+  eval "$(grep "DEVICE_ID=\"" "$service_dir")"
 
   # Get FREQS_ACARS
-  eval "$(grep "FREQ_STRING=\"" "$service_dir"/run)"
+  eval "$(grep "FREQ_STRING=\"" "$service_dir")"
 
   # Get ACARS_BIN
-  eval "$(grep "VDLM_BIN=\"" "$service_dir"/run)"
+  eval "$(grep "VDLM_BIN=\"" "$service_dir")"
 
   # Get PS output for the relevant process
   if [[ -n "$VDLM_BIN" ]]; then
@@ -49,7 +49,7 @@ function get_pid_of_decoder {
 # ===== Check dummpvdl2 processes =====
 
 # For each service...
-for service_dir in /run/s6/legacy-services/*; do
+for service_dir in /etc/s6-overlay/scripts/*; do
   service_name=$(basename "$service_dir")
 
   # If the service is dumpvdlm2-*...
@@ -163,7 +163,7 @@ done
 echo "==== Check Service Death Tallies ====="
 
 # Check service death tally
-mapfile -t SERVICES < <(find /run/s6/legacy-services -maxdepth 1 -type d -not -name "*s6-*" | tail +2)
+mapfile -t SERVICES < <(find /run/service -maxdepth 1 -not -name "*s6*" | tail +2)
 for service in "${SERVICES[@]}"; do
   SVDT=$(s6-svdt "$service" | grep -cv 'exitcode 0')
   if [[ "$SVDT" -gt 0 ]]; then
