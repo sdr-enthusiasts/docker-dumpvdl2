@@ -54,41 +54,6 @@ if [[ -n "$ZMQ_ENDPOINT" ]]; then
   fi
 fi
 
-if [[ -n "${SERIAL}" ]]; then
-	mapfile -t RTL_TEST_OUTPUT < <(timeout 1s rtl_test -d 0 2>&1 | grep -P '^\s+\d+:\s.*?,.*?,\s+SN:\s+.*?$' | IFS=$'\n' sed -n 's/^\s*\([^:]*\):[^,]*,[^,]*,\s*SN:\s*\(.*\)$/\1,\2/; s/\s*$//p' || true)
-	for RTL_TEST_OUTPUT_LINE in "${RTL_TEST_OUTPUT[@]}"; do
-			if [[ "${RTL_TEST_OUTPUT_LINE##*,}" == "$SERIAL" ]]; then
-					OUTPUT_DEVICE_ID="${RTL_TEST_OUTPUT_LINE%%,*}"
-			fi
-	done
-
-	if [[ -z "${OUTPUT_DEVICE_ID}" ]]; then
-			echo "Could not find Device ID for serial '$SERIAL'"
-	fi
-
-	rm -rf /etc/s6-overlay/scripts/dumpvdl2 > /dev/null 2>&1
-	if [[ -n "${OUTPUT_DEVICE_ID}" ]]; then
-		cp /etc/templates/run /etc/s6-overlay/scripts/dumpvdl2
-		sed -i "s/DEVICE_ID=\"\"/DEVICE_ID=\"$OUTPUT_DEVICE_ID\"/g" /etc/s6-overlay/scripts/dumpvdl2
-	else
-		cp /etc/templates/bad /etc/s6-overlay/scripts/dumpvdl2
-	fi
-
-	#sed -i "s/DEVICE_ID=\"\"/DEVICE_ID=\"$OUTPUT_DEVICE_ID\"/g" /etc/s6-overlay/scripts/dumpvdl2
-elif [[ -n "${SOAPYSDR}" ]]; then
-	if ! SoapySDRUtil --probe="${SOAPYSDR}"; then
-		echo "Could not find SoapySDR device for '$SOAPYSDR'"
-		cp /etc/templates/bad /etc/s6-overlay/scripts/dumpvdl2
-	else
-		cp /etc/templates/run /etc/s6-overlay/scripts/dumpvdl2
-	fi
-else
-	echo "One of SERIAL or SOAPYSDR is not set, exiting"
-	exit 1
-fi
-
-s6-chmod 0755 /etc/s6-overlay/scripts/dumpvdl2
-
 mkdir -p /run/acars
 touch /run/acars/vdlm.past5min.json
 
