@@ -8,7 +8,7 @@
 
 Docker container for running [dumpvdl2](https://github.com/szpajder/dumpvdl2) and forwarding the received JSON messages to another system or docker container. Best used alongside [ACARS Hub](https://github.com/fredclausen/acarshub).
 
-Builds and runs on `amd64`, `arm64`, `arm/v7`, `arm/v6` and `386` architectures.
+Builds and runs on `amd64`, `arm64`, `arm/v7`.
 
 ## Note for Users running 32-bit Debian Buster-based OSes on ARM
 
