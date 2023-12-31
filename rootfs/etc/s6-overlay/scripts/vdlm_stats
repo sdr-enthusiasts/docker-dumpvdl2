@@ -31,7 +31,7 @@ while true; do
   fi
 
   # shellcheck disable=SC2016
-  "${s6wrap[@]}"  echo "$(sed 's/}{/}\n{/g' /run/acars/vdlm.past5min.json | wc -l) VDLM2 messages received in last 5 mins"
+  "${s6wrap[@]}" echo "$(sed 's/}{/}\n{/g' /run/acars/vdlm.past5min.json | wc -l) VDLM2 messages received in last 5 mins"
 
   # rotate files keeping last 2 hours
   for i in {24..1}; do
