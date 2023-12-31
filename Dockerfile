@@ -31,12 +31,28 @@ RUN set -x && \
     KEPT_PACKAGES+=(libglib2.0-0) && \
     TEMP_PACKAGES+=(libzmq3-dev) && \
     KEPT_PACKAGES+=(libzmq5) && \
+    TEMP_PACKAGES+=(libusb-1.0-0-dev) && \
+    KEPT_PACKAGES+=(libusb-1.0-0) && \
     # install packages
     apt-get update && \
     apt-get install -y --no-install-recommends \
     "${KEPT_PACKAGES[@]}" \
     "${TEMP_PACKAGES[@]}"\
     && \
+    # install sdrplay
+    curl --location --output /tmp/install_sdrplay.sh https://raw.githubusercontent.com/sdr-enthusiasts/install-libsdrplay/main/install_sdrplay.sh && \
+    chmod +x /tmp/install_sdrplay.sh && \
+    /tmp/install_sdrplay.sh && \
+    # deploy airspyone host
+    git clone https://github.com/airspy/airspyone_host.git /src/airspyone_host && \
+    pushd /src/airspyone_host && \
+    mkdir -p /src/airspyone_host/build && \
+    pushd /src/airspyone_host/build && \
+    cmake ../ -DINSTALL_UDEV_RULES=ON && \
+    make && \
+    make install && \
+    ldconfig && \
+    popd && popd && \
     # Deploy SoapySDR
     git clone https://github.com/pothosware/SoapySDR.git /src/SoapySDR && \
     pushd /src/SoapySDR && \
@@ -59,6 +75,40 @@ RUN set -x && \
     make all && \
     make install && \
     popd && popd && \
+    ldconfig && \
+    # Deploy SoapyRTLSDR
+    git clone https://github.com/pothosware/SoapyRTLSDR.git /src/SoapyRTLSDR && \
+    pushd /src/SoapyRTLSDR && \
+    BRANCH_SOAPYRTLSDR=$(git tag --sort="creatordate" | tail -1) && \
+    git checkout "$BRANCH_SOAPYRTLSDR" && \
+    mkdir -p /src/SoapyRTLSDR/build && \
+    pushd /src/SoapyRTLSDR/build && \
+    cmake ../ -DCMAKE_BUILD_TYPE=Debug && \
+    make all && \
+    make install && \
+    popd && popd && \
+    ldconfig && \
+    # install sdrplay support for soapy
+    git clone https://github.com/pothosware/SoapySDRPlay.git /src/SoapySDRPlay && \
+    pushd /src/SoapySDRPlay && \
+    mkdir build && \
+    pushd build && \
+    cmake .. && \
+    make && \
+    make install && \
+    popd && \
+    popd && \
+    ldconfig && \
+    # Deploy Airspy
+    git clone https://github.com/pothosware/SoapyAirspy.git /src/SoapyAirspy && \
+    pushd /src/SoapyAirspy && \
+    mkdir build && \
+    pushd build && \
+    cmake .. && \
+    make    && \
+    make install   && \
+    popd && \
+    popd && \
     ldconfig && \
     # Install dumpvdl2
     git clone https://github.com/szpajder/dumpvdl2.git /src/dumpvdl2 && \
