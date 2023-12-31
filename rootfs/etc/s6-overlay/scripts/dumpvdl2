@@ -1,11 +1,14 @@
 #!/command/with-contenv bash
 #shellcheck shell=bash
 
+source /scripts/common
+
 # Require that acars_server is running
 if ! netstat -an | grep -P '^\s*tcp\s+\d+\s+\d+\s+0\.0\.0\.0:15555\s+(?>\d{1,3}\.{0,1}){4}:\*\s+LISTEN\s*$' > /dev/null; then
   sleep 1
   if [[ ! ${QUIET_LOGS,,} =~ true ]]; then
-    echo "[dumpvdl2] vdlm_server not running, exiting"
+    # shellcheck disable=SC2154
+    "${s6wrap[@]}"  echo "vdlm_server not running, exiting"
   fi
   exit
 fi
@@ -55,37 +58,16 @@ if [[ -n "$ZMQ_MODE" ]]; then
   fi
 fi
 
-# if [ -z "${QUIET_MESSAGES}" ]; then
-#   VDLM_CMD+=("--output" "decoded:text:file:path=-")
-# fi
-
-# if [ -n "${PLANEPLOTTER}" ]; then
-# 	VDLM_CMD+=("--output" "decoded:pp_acars:udp:address=127.0.0.1,port=4444")
-
-# 	if ! netstat -an | grep -P '^\s*tcp\s+\d+\s+\d+\s+0\.0\.0\.0:14444\s+(?>\d{1,3}\.{0,1}){4}:\*\s+LISTEN\s*$' > /dev/null; then
-#       if [ -z "${QUIET_LOGS}" ]; then
-#         # shellcheck disable=SC2016
-#         echo "Waiting for planeplotter_server" | stdbuf -oL awk '{print "[dumpvdl2] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}'
-#       fi
-#       sleep 1
-#       exit
-# 	fi
-#     if [ -z "${QUIET_LOGS}" ]; then
-#       # shellcheck disable=SC2016
-#       echo "planeplotter_server ready, starting service" | stdbuf -oL awk '{print "[dumpvdl2] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}'
-#     fi
-# fi
-
 # shellcheck disable=SC2206
 VDLM_CMD+=($FREQ_STRING)
 
-echo "[dumpvdl2] Starting: '$VDLM_BIN" "${VDLM_CMD[*]}'"
+"${s6wrap[@]}" echo "Starting: '$VDLM_BIN" "${VDLM_CMD[*]}'"
 
 set -eo pipefail
 
 if [[ ${QUIET_LOGS,,} =~ true ]]; then
 # shellcheck disable=SC2016
-  "$VDLM_BIN" "${VDLM_CMD[@]}" 2>&1 | \
+  "${s6wrap[@]}"  "$VDLM_BIN" "${VDLM_CMD[@]}" 2>&1 | \
   stdbuf -oL sed --unbuffered '/^$/d' | \
   stdbuf -oL awk '! /^dumpvdl2/' | \
   stdbuf -oL awk '! /^Sampling rate set/' | \
@@ -99,15 +81,13 @@ if [[ ${QUIET_LOGS,,} =~ true ]]; then
   stdbuf -oL awk '! /^Center frequency set/' | \
   stdbuf -oL awk '! /^Device [#]?[0-9]+/' | \
   stdbuf -oL awk '! /^Allocating [0-9]+ zero-copy buffers/' | \
-  stdbuf -oL awk '{print "[dumpvdl2] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}'
+  stdbuf -oL awk '{print $0}'
 else
   # shellcheck disable=SC2016
-  "$VDLM_BIN" "${VDLM_CMD[@]}" 2>&1 | \
-  stdbuf -oL sed --unbuffered '/^$/d' | \
-  stdbuf -oL awk '{print "[dumpvdl2] " strftime("%Y/%m/%d %H:%M:%S", systime()) " " $0}'
+  "${s6wrap[@]}" "$VDLM_BIN" "${VDLM_CMD[@]}"
 fi
 
 # if we've ended up here there is a problem!
-echo "[dumpvdl2] Exiting with error"
+"${s6wrap[@]}" echo "Exiting with error"
 sleep 5
 exit 1
