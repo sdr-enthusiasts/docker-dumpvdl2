@@ -16,11 +16,12 @@ VDLM_BIN="/usr/local/bin/dumpvdl2"
 FREQ_STRING=""
 VDLM_CMD=()
 
+
 # Specify device ID
 if [ -n "${SOAPYSDR}" ]; then
 	VDLM_CMD+=("--soapysdr" "$SOAPYSDR")
 elif [ -n "${SERIAL}" ]; then
-	VDLM_CMD+=("--rtlsdr" "$SERIAL")
+	VDLM_CMD+=("--soapysdr" "driver=rtlsdr,serial=$SERIAL")
 fi
 
 if [ -n "$CENTER_FREQ" ]; then
