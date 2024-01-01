@@ -10,7 +10,8 @@ ENV DEVICE_INDEX="" \
     SOAPYSDR="" \
     SERVER="acarshub" \
     SERVER_PORT="5555" \
-    VDLM_FILTER_ENABLE="TRUE"
+    VDLM_FILTER_ENABLE="TRUE" \
+    VDLM_FILTER="all,-avlc_s,-acars_nodata,-x25_control,-idrp_keepalive,-esis"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
