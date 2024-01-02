@@ -18,10 +18,6 @@ Please see: [Buster-Docker-Fixes](https://github.com/fredclausen/Buster-Docker-F
 
 A computer host on a suitable architecture and one USB RTL-SDR dongle connected to an antenna.
 
-## ACARS Hub integration
-
-The default `SERVER` and `SERVER_PORT` values are suitable for automatically working with ACARS Hub, provided ACARS Hub is **on the same pi as the decoder**. If ACARS Hub is not on the same Pi, please provide the correct host name in the `SERVER` variable. Very likely you will not have to change the `SERVER_PORT`, but if you did change the port mapping on your ACARS Hub (and you will know if you did) please set the server port correctly as well.
-
 ## Deprecation Notice
 
 `SERIAL` has been deprecated in favor of `SOAPYSDR`. Please update your configuration accordingly. If `SERIAL` is set the driver will be set to `rtlsdr` and the serial number will be set to the value of `SERIAL`.
@@ -45,6 +41,8 @@ services:
       - SOAPYSDR=driver=rtlsdr,serial=13305
       - FEED_ID=VDLM
       - FREQUENCIES=136725000;136975000;136875000
+      - ZMQ_MODE=server
+      - ZMQ_ENDPOINT=tcp://0.0.0.0:45555
     tmpfs:
       - /run:exec,size=64M
       - /var/log
