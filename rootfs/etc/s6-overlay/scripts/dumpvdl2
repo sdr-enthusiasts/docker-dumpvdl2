@@ -46,17 +46,21 @@ fi
 
 VDLM_CMD+=("--gain" "$GAIN")
 
-# Send output JSON to vdlm2_server.
 if [[ ${VDLM_FILTER_ENABLE,,} =~ true ]]; then
   VDLM_CMD+=("--msg-filter" "all,-avlc_s,-acars_nodata,-x25_control,-idrp_keepalive,-esis")
 fi
 
+# Send output JSON to vdlm2_server.
 VDLM_CMD+=("--station-id=$FEED_ID" "--output" "decoded:json:udp:address=127.0.0.1,port=5555")
 
 if [[ -n "$ZMQ_MODE" ]]; then
   if [[ -n "$ZMQ_ENDPOINT" ]]; then
     VDLM_CMD+=("--output" "decoded:json:zmq:mode=${ZMQ_MODE,,},endpoint=${ZMQ_ENDPOINT}")
   fi
+fi
+
+if [[ -n "$STATSD_SERVER" ]]; then
+  VDLM_CMD+=("--statsd" "$STATSD_SERVER")
 fi
 
 # shellcheck disable=SC2206
