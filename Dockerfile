@@ -11,7 +11,8 @@ ENV DEVICE_INDEX="" \
     SERVER="acarshub" \
     SERVER_PORT="5555" \
     VDLM_FILTER_ENABLE="TRUE" \
-    VDLM_FILTER="all,-avlc_s,-acars_nodata,-x25_control,-idrp_keepalive,-esis"
+    VDLM_FILTER="all,-avlc_s,-acars_nodata,-x25_control,-idrp_keepalive,-esis" \
+    STATSD_SERVER=""
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -40,6 +41,13 @@ RUN set -x && \
     "${KEPT_PACKAGES[@]}" \
     "${TEMP_PACKAGES[@]}"\
     && \
+    # Install statsd-c-client library
+    git clone https://github.com/romanbsd/statsd-c-client.git /src/statsd-client && \
+    pushd /src/statsd-client && \
+    make -j "$(nproc)" && \
+    make install && \
+    ldconfig && \
+    popd && \
     # install sdrplay
     curl --location --output /tmp/install_sdrplay.sh https://raw.githubusercontent.com/sdr-enthusiasts/install-libsdrplay/main/install_sdrplay.sh && \
     chmod +x /tmp/install_sdrplay.sh && \
