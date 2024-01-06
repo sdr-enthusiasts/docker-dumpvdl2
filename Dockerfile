@@ -55,6 +55,7 @@ RUN set -x && \
     /rename_current_arch_binary.sh && \
     rm -fv \
     /opt/acars-bridge.* \
+    && \
     # Install statsd-c-client library
     git clone https://github.com/romanbsd/statsd-c-client.git /src/statsd-client && \
     pushd /src/statsd-client && \
