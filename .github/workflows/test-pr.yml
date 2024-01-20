@@ -1,23 +1,6 @@
 name: Deploy
 
 on:
-  # Enable manual running of action if necessary
-  workflow_dispatch:
-    inputs:
-      reason:
-        required: true
-        description: "Reason for running this workflow"
-      use_test_image:
-        required: false
-        type: boolean
-        description: "Use base image testpr"
-        default: false
-      build_latest_as_test:
-        required: false
-        type: boolean
-        description: "Build latest as test"
-        default: false
-
   # Build and deploy the image on pushes to main branch
   push:
     branches:
@@ -33,22 +16,6 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  workflow-dispatch:
-    name: Triggered via Workflow Dispatch?
-    # only run this step if workflow dispatch triggered
-    # log the reason the workflow dispatch was triggered
-    if: |
-      github.event_name == 'workflow_dispatch' &&
-      github.event.inputs.reason != ''
-    runs-on: ubuntu-latest
-    steps:
-      - name: Log dispatch reason
-        env:
-          INPUTS_REASON: ${{ github.event.inputs.reason }}
-          INPUTS_USE_TEST_IMAGE: ${{ github.event.inputs.use_test_image }}
-        run: |
-          echo "Workflow dispatch reason: $INPUTS_REASON"
-          echo "Use test image: $INPUTS_USE_TEST_IMAGE"
   binary_build_armv7:
     name: Build Binary - armv7
     runs-on: ubuntu-latest
@@ -201,44 +168,13 @@ jobs:
         with:
           path: ./bin/
           key: ${{ github.run_id }}
-  build_and_push:
-    name: Image Build & Push
-    needs: [consolidate_binaries]
-    if: |
-      github.event.inputs.build_latest_as_test == 'false' ||
-      github.event.inputs.build_latest_as_test == ''
-    uses: sdr-enthusiasts/common-github-workflows/.github/workflows/build_and_push_image.yml@main
-    with:
-      push_enabled: true
-      push_destinations: ghcr.io
-      ghcr_repo_owner: ${{ github.repository_owner }}
-      ghcr_repo: ${{ github.repository }}
-      platform_linux_arm32v6_enabled: false
-      platform_linux_i386_enabled: false
-      get_version_method: git_commit_hash_short
-      # set build_latest to true if github.event.inputs.use_test_image is false
-      build_latest: ${{ github.event.inputs.use_test_image == 'false' || github.event.inputs.use_test_image == '' }}
-      build_baseimage_test: ${{ github.event.inputs.use_test_image == 'true' }}
-      # only build the entire stack if we are not using the test image
-      build_version_specific: ${{ github.event.inputs.use_test_image == 'false' || github.event.inputs.use_test_image == '' }}
-      build_platform_specific: ${{ github.event.inputs.use_test_image == 'false' || github.event.inputs.use_test_image == '' }}
-      build_nohealthcheck: ${{ github.event.inputs.use_test_image == 'false' || github.event.inputs.use_test_image == '' }}
-      build_baseimage_url: :acars-decoder/:acars-decoder-test-pr
-      cache_enabled: true
-      cache_path: ./bin/
-      cache_key: ${{ github.run_id }}
-    secrets:
-      ghcr_token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy_test:
     name: Deploy as test
     needs: [consolidate_binaries]
-    if: |
-      github.event.inputs.build_latest_as_test == 'true' &&
-      (github.event.inputs.use_test_image == 'false' || github.event.inputs.use_test_image == '')
     uses: sdr-enthusiasts/common-github-workflows/.github/workflows/build_and_push_image.yml@main
     with:
-      push_enabled: true
+      push_enabled: false
       push_destinations: ghcr.io
       ghcr_repo_owner: ${{ github.repository_owner }}
       ghcr_repo: ${{ github.repository }}
