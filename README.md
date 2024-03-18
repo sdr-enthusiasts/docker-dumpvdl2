@@ -8,11 +8,9 @@
 
 Docker container for running [dumpvdl2](https://github.com/szpajder/dumpvdl2) and forwarding the received JSON messages to another system or docker container. Best used alongside [ACARS Hub](https://github.com/fredclausen/acarshub).
 
-Builds and runs on `amd64`, `arm64`, `arm/v7`.
+Builds and runs on `amd64`, `arm64`.
 
-## Note for Users running 32-bit Debian Buster-based OSes on ARM
-
-Please see: [Buster-Docker-Fixes](https://github.com/fredclausen/Buster-Docker-Fixes)!
+Please note: **DUE TO LIBSDRPLAY, THIS CONTAINER WILL NOT RUN ON ARM32 DEVICES**
 
 ## Required hardware
 
@@ -55,7 +53,7 @@ services:
 | `TZ`                 | Your timezone                                                                                                                                                                                    | No       | UTC                                                            |
 | `SOAPYSDR`           | The SoapySDR device string that identifies your dongle. See below for supported soapy sdr types.                                                                                                 | No       | Blank                                                          |
 | `FEED_ID`            | Used by the decoder to insert a unique ID in to the output message                                                                                                                               | Yes      | Blank                                                          |
-| `FREQUENCIES`        | Semicolon-separated list of frequencies for the decoder to listen to. All frequencies should either be in Hz, or in MHz with exactly 3 digits after the decimal point.                                              | Yes      | Blank                                                          |
+| `FREQUENCIES`        | Semicolon-separated list of frequencies for the decoder to listen to. All frequencies should either be in Hz, or in MHz with exactly 3 digits after the decimal point.                           | Yes      | Blank                                                          |
 | `PPM`                | Parts per million correction of the decoder                                                                                                                                                      | No       | 0                                                              |
 | `GAIN`               | The gain applied to the RTL-SDR dongle.                                                                                                                                                          | No       | `40`                                                           |
 | `OVERSAMPLE`         | Overrides the default oversampling rate used by dumpvdl2.                                                                                                                                        | No       | Blank                                                          |
