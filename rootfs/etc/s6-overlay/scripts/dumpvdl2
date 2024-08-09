@@ -35,6 +35,12 @@ if [ -n "${PPM}" ]; then
 	VDLM_CMD+=("--correction" "$PPM")
 fi
 
+if chk_enabled "${ENABLE_BIAS_T}"; then
+  VDLM_CMD+=("--biast" "1")
+else
+  VDLM_CMD+=("--biast" "0")
+fi
+
 VDLM_CMD+=("--gain" "$GAIN")
 
 if [[ ${VDLM_FILTER_ENABLE,,} =~ true ]]; then
