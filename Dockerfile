@@ -61,10 +61,6 @@ RUN set -x && \
     make install && \
     ldconfig && \
     popd && \
-    # install sdrplay
-    curl --location --output /tmp/install_sdrplay.sh https://raw.githubusercontent.com/sdr-enthusiasts/install-libsdrplay/main/install_sdrplay.sh && \
-    chmod +x /tmp/install_sdrplay.sh && \
-    /tmp/install_sdrplay.sh && \
     # deploy airspyone host
     git clone https://github.com/airspy/airspyone_host.git /src/airspyone_host && \
     pushd /src/airspyone_host && \
@@ -88,6 +84,10 @@ RUN set -x && \
     make install && \
     popd && popd && \
     ldconfig && \
+    # install sdrplay
+    curl --location --output /tmp/install_sdrplay.sh https://raw.githubusercontent.com/sdr-enthusiasts/install-libsdrplay/main/install_sdrplay.sh && \
+    chmod +x /tmp/install_sdrplay.sh && \
+    /tmp/install_sdrplay.sh && \
     # Deploy SoapyRTLTCP
     git clone https://github.com/pothosware/SoapyRTLTCP.git /src/SoapyRTLTCP && \
     pushd /src/SoapyRTLTCP && \
