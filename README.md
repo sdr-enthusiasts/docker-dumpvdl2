@@ -28,7 +28,6 @@ version: "2.0"
 services:
   dumpvdl2:
     image: ghcr.io/sdr-enthusiasts/docker-dumpvdl2:latest
-    tty: true
     container_name: dumpvdl2
     restart: always
     ports:
