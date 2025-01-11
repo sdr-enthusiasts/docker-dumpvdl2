@@ -15,7 +15,7 @@ RUN set -x && \
     cp /tmp/acars-bridge/target/release/acars-bridge . && \
     cargo clean
 
-FROM ghcr.io/sdr-enthusiasts/docker-baseimage:acars-decoder
+FROM ghcr.io/sdr-enthusiasts/docker-baseimage:acars-decoder-soapy
 
 ENV DEVICE_INDEX="" \
     QUIET_LOGS="TRUE" \
