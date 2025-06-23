@@ -1,3 +1,4 @@
+FROM ghcr.io/sdr-enthusiasts/acars-bridge:latest AS builder
 FROM ghcr.io/sdr-enthusiasts/docker-baseimage:acars-decoder-soapy
 
 ENV DEVICE_INDEX="" \
@@ -16,8 +17,7 @@ ENV DEVICE_INDEX="" \
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY ./rootfs /
-COPY ./bin/acars-bridge.arm64/acars-bridge /opt/acars-bridge.arm64
-COPY ./bin/acars-bridge.amd64/acars-bridge /opt/acars-bridge.amd64
+COPY --from=builder /acars-bridge /opt/acars-bridge
 
 # hadolint ignore=DL3008,SC2086,SC2039
 RUN set -x && \
@@ -26,7 +26,7 @@ RUN set -x && \
     # Required for building multiple packages.
     TEMP_PACKAGES+=(build-essential) && \
     TEMP_PACKAGES+=(pkg-config) && \
-    TEMP_PACKAGES+=(cmake) && \
+    TEMP_PACKAGES+=(cmake) && \chmod +x /opt/acars-bridge && \
     TEMP_PACKAGES+=(git) && \
     TEMP_PACKAGES+=(automake) && \
     TEMP_PACKAGES+=(autoconf) && \
@@ -45,15 +45,7 @@ RUN set -x && \
     "${TEMP_PACKAGES[@]}"\
     && \
     # ensure binaries are executable
-    chmod -v a+x \
-    /opt/acars-bridge.arm64 \
-    /opt/acars-bridge.amd64 \
-    && \
-    # remove foreign architecture binaries
-    /rename_current_arch_binary.sh && \
-    rm -fv \
-    /opt/acars-bridge.* \
-    && \
+    chmod +x /opt/acars-bridge && \
     # Install statsd-c-client library
     git clone https://github.com/romanbsd/statsd-c-client.git /src/statsd-client && \
     pushd /src/statsd-client && \
