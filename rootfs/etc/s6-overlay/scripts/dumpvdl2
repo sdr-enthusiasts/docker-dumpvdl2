@@ -15,6 +15,9 @@ VDLM_CMD=()
 # Specify device ID
 if [ -n "${SOAPYSDR}" ]; then
 	VDLM_CMD+=("--soapysdr" "$SOAPYSDR")
+    if [[ -n "$SOAPY_DEVICE_SETTINGS" ]]; then
+        VDLM_CMD+=("--device-settings" "$SOAPY_DEVICE_SETTINGS")
+    fi
 elif [ -n "${SERIAL}" ]; then
 	VDLM_CMD+=("--soapysdr" "driver=rtlsdr,serial=$SERIAL")
 fi
