@@ -19,7 +19,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 COPY ./rootfs /
 COPY --from=builder /acars-bridge /opt/acars-bridge
 
-# hadolint ignore=DL3008,SC2086,SC2039
+# hadolint ignore=DL3008,SC2086,SC2039,SC1091
 RUN set -x && \
     TEMP_PACKAGES=() && \
     KEPT_PACKAGES=() && \
@@ -33,7 +33,16 @@ RUN set -x && \
     TEMP_PACKAGES+=(wget) && \
     # packages for dumpvdl2
     TEMP_PACKAGES+=(libglib2.0-dev) && \
-    KEPT_PACKAGES+=(libglib2.0-0) && \
+    # if we are on trixie, we want libglib2.0-0t64, otherwise we want libglib2.0-0
+    . /etc/os-release && \
+    # distro="$ID" && \
+    # version="$VERSION_ID" && \
+    codename="$VERSION_CODENAME" && \
+    if [[ "$codename" == "trixie" ]]; then \
+    KEPT_PACKAGES+=(libglib2.0-0t64); \
+    else \
+    KEPT_PACKAGES+=(libglib2.0-0); \
+    fi && \
     TEMP_PACKAGES+=(libzmq3-dev) && \
     KEPT_PACKAGES+=(libzmq5) && \
     TEMP_PACKAGES+=(libusb-1.0-0-dev) && \
