@@ -16,10 +16,6 @@ Please note: **DUE TO LIBSDRPLAY, THIS CONTAINER WILL NOT RUN ON ARM32 DEVICES**
 
 A computer host on a suitable architecture and one USB RTL-SDR dongle connected to an antenna.
 
-## Deprecation Notice
-
-`SERIAL` has been deprecated in favor of `SOAPYSDR`. Please update your configuration accordingly. If `SERIAL` is set the driver will be set to `rtlsdr` and the serial number will be set to the value of `SERIAL`.
-
 ## Up and running
 
 ```yaml
@@ -33,7 +29,7 @@ services:
     ports:
     environment:
       - TZ="America/Denver"
-      - SOAPYSDR=driver=rtlsdr,serial=13305
+      - RTL_SERIAL=13305
       - FEED_ID=VDLM
       - FREQUENCIES=136725000;136975000;136875000
       - ZMQ_MODE=server
@@ -52,6 +48,8 @@ services:
 | Variable             | Description                                                                                                                                                                                      | Required | Default                                                        |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | -------------------------------------------------------------- |
 | `TZ`                 | Your timezone                                                                                                                                                                                    | No       | UTC                                                            |
+| `RTL_SERIAL`         | The rtlsdr device serial that identifies your dongle.                                                                                                                                            | No       | Blank                                                          |
+| `BIASTEE`            | Enable biastee when using RTL_SERIAL (doesn't work with SOAPY).                                                                                                                                  | No       | Blank                                                          |
 | `SOAPYSDR`           | The SoapySDR device string that identifies your dongle. See below for supported soapy sdr types.                                                                                                 | No       | Blank                                                          |
 | `SOAPY_DEVICE_SETTINGS` | The SoapySDR settings string with comma separated options, example: biastee=true                                                                                                 | No       | Blank                                                          |
 | `FEED_ID`            | Used by the decoder to insert a unique ID in to the output message                                                                                                                               | Yes      | Blank                                                          |

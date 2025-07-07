@@ -11,6 +11,10 @@ VDLM_BIN="/usr/local/bin/dumpvdl2"
 FREQ_STRING=""
 VDLM_CMD=()
 
+if [[ -z "${RTL_SERIAL}" ]] && [[ -n "${SERIAL}" ]]; then
+    # if RTL_SERIAL not set, use legacy env var SERIAL
+    RTL_SERIAL="${SERIAL}"
+fi
 
 # Specify device ID
 if [ -n "${SOAPYSDR}" ]; then
@@ -18,8 +22,13 @@ if [ -n "${SOAPYSDR}" ]; then
     if [[ -n "$SOAPY_DEVICE_SETTINGS" ]]; then
         VDLM_CMD+=("--device-settings" "$SOAPY_DEVICE_SETTINGS")
     fi
-elif [ -n "${SERIAL}" ]; then
-	VDLM_CMD+=("--soapysdr" "driver=rtlsdr,serial=$SERIAL")
+elif [[ -n "${RTL_SERIAL}" ]]; then
+	VDLM_CMD+=("--rtlsdr" "$RTL_SERIAL")
+    if chk_enabled "${BIASTEE}"; then
+        VDLM_CMD+=("--bias" "1")
+    else
+        VDLM_CMD+=("--bias" "0")
+    fi
 fi
 
 if [ -n "$CENTER_FREQ" ]; then

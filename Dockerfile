@@ -67,7 +67,7 @@ RUN set -x && \
     mkdir -p /src/dumpvdl2/build && \
     pushd /src/dumpvdl2/build && \
     # cmake ../ && \
-    cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DRTLSDR=FALSE && \
+    cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DRTLSDR=TRUE && \
     make -j "$(nproc)" && \
     make install && \
     popd && \
