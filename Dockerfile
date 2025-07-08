@@ -66,6 +66,7 @@ RUN set -x && \
     git clone https://github.com/szpajder/dumpvdl2.git /src/dumpvdl2 && \
     mkdir -p /src/dumpvdl2/build && \
     pushd /src/dumpvdl2/build && \
+    sed -i -e 's/#define RTL_OVERSAMPLE.*/#define RTL_OVERSAMPLE 12/' ../src/rtl.h && \
     # cmake ../ && \
     cmake ../ -DCMAKE_BUILD_TYPE=RelWithDebInfo -DRTLSDR=TRUE && \
     make -j "$(nproc)" && \
