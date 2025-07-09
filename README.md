@@ -31,7 +31,7 @@ services:
       - TZ="America/Denver"
       - RTL_SERIAL=13305
       - FEED_ID=VDLM
-      - FREQUENCIES=136725000;136975000;136875000
+      - FREQUENCIES=136.725 136.975 136.875
       - ZMQ_MODE=server
       - ZMQ_ENDPOINT=tcp://0.0.0.0:45555
     tmpfs:
@@ -53,7 +53,7 @@ services:
 | `SOAPYSDR`           | The SoapySDR device string that identifies your dongle. See below for supported soapy sdr types.                                                                                                 | No       | Blank                                                          |
 | `SOAPY_DEVICE_SETTINGS` | The SoapySDR settings string with comma separated options, example: biastee=true                                                                                                 | No       | Blank                                                          |
 | `FEED_ID`            | Used by the decoder to insert a unique ID in to the output message                                                                                                                               | Yes      | Blank                                                          |
-| `FREQUENCIES`        | Semicolon-separated list of frequencies for the decoder to listen to. All frequencies should either be in Hz, or in MHz with exactly 3 digits after the decimal point.                           | Yes      | Blank                                                          |
+| `FREQUENCIES`        | Semicolon-separated or space-separated list of frequencies for the decoder to listen to. All frequencies should either be in Hz, kHz, or MHz                                                     | Yes      | Blank                                                          |
 | `PPM`                | Parts per million correction of the decoder                                                                                                                                                      | No       | 0                                                              |
 | `GAIN`               | The gain applied to the RTL-SDR dongle.                                                                                                                                                          | No       | `40`                                                           |
 | `OVERSAMPLE`         | Overrides the default oversampling rate used by dumpvdl2. (BROKEN, will kill reception, don't use)                                                                                               | No       | Blank                                                          |
