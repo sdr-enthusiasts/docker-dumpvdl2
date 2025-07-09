@@ -19,8 +19,7 @@ if [[ -z "${FREQUENCIES}" ]]; then
 	exit 1
 fi
 
-IFS='; '
-read -ra SPLIT_FREQS <<< "${FREQUENCIES}"
+IFS='; ' read -ra SPLIT_FREQS <<< "${FREQUENCIES}"
 
 # loop through SPLIT_FREQS
 
