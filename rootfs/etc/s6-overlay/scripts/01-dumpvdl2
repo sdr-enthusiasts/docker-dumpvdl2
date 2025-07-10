@@ -19,8 +19,7 @@ if [[ -z "${FREQUENCIES}" ]]; then
 	exit 1
 fi
 
-IFS=';'
-read -ra SPLIT_FREQS <<< "${FREQUENCIES}"
+IFS='; ' read -ra SPLIT_FREQS <<< "${FREQUENCIES}"
 
 # loop through SPLIT_FREQS
 
@@ -30,11 +29,20 @@ read -ra SPLIT_FREQS <<< "${FREQUENCIES}"
 FREQ_STRING=""
 for i in "${SPLIT_FREQS[@]}"
 do
-	[[ "$i" == *"."* ]] && j="${i/./}000" || j="$i" # convert xxx.xxx (MHz) into Hertz yyyyyy000 if needed
-	if [[ $(echo "$j > 118000000" | bc)  -eq 0 || $(echo "$j < 137000000" | bc) -eq 0 ]]; then
+	# bc: / 1 at the end converts back to integer
+	if (( $(bc <<< "$i < 1 * 1000 * 1000") )); then
+		if (( $(bc <<< "$i > 1 * 1000") )); then
+			# convert kHz into Hz
+			i=$(bc <<< "$i * 1000.0 / 1")
+		else
+			# convert MHz into Hz
+			i=$(bc <<< "$i * 1000.0 * 1000.0 / 1")
+		fi
+	fi
+	if (( $(bc <<< "$i < 118000000") || $(bc <<< "$i > 137000000") )); then
 		"${s6wrap[@]}"  echo "warning: FREQUENCY $i is not in the range of 118000000 - 137000000 or 118.0 - 137.0"
 	fi
-	FREQ_STRING+="$j "
+	FREQ_STRING+="$i "
 done
 
 # Make sure mode is valid

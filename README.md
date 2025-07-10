@@ -31,7 +31,7 @@ services:
       - TZ="America/Denver"
       - RTL_SERIAL=13305
       - FEED_ID=VDLM
-      - FREQUENCIES=136725000;136975000;136875000
+      - FREQUENCIES=136.725 136.975 136.875
       - ZMQ_MODE=server
       - ZMQ_ENDPOINT=tcp://0.0.0.0:45555
     tmpfs:
@@ -53,13 +53,13 @@ services:
 | `SOAPYSDR`           | The SoapySDR device string that identifies your dongle. See below for supported soapy sdr types.                                                                                                 | No       | Blank                                                          |
 | `SOAPY_DEVICE_SETTINGS` | The SoapySDR settings string with comma separated options, example: biastee=true                                                                                                 | No       | Blank                                                          |
 | `FEED_ID`            | Used by the decoder to insert a unique ID in to the output message                                                                                                                               | Yes      | Blank                                                          |
-| `FREQUENCIES`        | Semicolon-separated list of frequencies for the decoder to listen to. All frequencies should either be in Hz, or in MHz with exactly 3 digits after the decimal point.                           | Yes      | Blank                                                          |
+| `FREQUENCIES`        | Semicolon-separated or space-separated list of frequencies for the decoder to listen to. All frequencies should either be in Hz, kHz, or MHz                                                     | Yes      | Blank                                                          |
 | `PPM`                | Parts per million correction of the decoder                                                                                                                                                      | No       | 0                                                              |
 | `GAIN`               | The gain applied to the RTL-SDR dongle.                                                                                                                                                          | No       | `40`                                                           |
 | `OVERSAMPLE`         | Overrides the default oversampling rate used by dumpvdl2. (BROKEN, will kill reception, don't use)                                                                                               | No       | Blank                                                          |
 | `VDLM_FILTER_ENABLE` | Filter out non-informational messages. Turning this off (set to a blank value) will cause increased message rate but the messages will be of little value. Will cause extra SD card read/writes. | No       | `TRUE`                                                         |
 | `VDLM_FILTER`        | Specify the dumpvdl2 filter string. Used it `VDLM_FILTER_ENABLE` is true.                                                                                                                        | No       | `all,-avlc_s,-acars_nodata,-x25_control,-idrp_keepalive,-esis` |
-| `QUIET_LOGS`         | Mute log output to the bare minimum. Set to `false` to disable.                                                                                                                                  | No       | `TRUE`                                                         |
+| `QUIET_LOGS`         | Mute log output to the bare minimum. Set to `true` to enable.                                                                                                                                    | No       | `FALSE`                                                         |
 | `ZMQ_MODE`           | Output to [zmq](https://zeromq.org) publisher socket. This sets the mode to `client` or `server`.                                                                                                | No       |                                                                |
 | `ZMQ_ENDPOINT`       | Output to [zmq](https://zeromq.org) publisher socket. This sets the `endpoint`. Syntax is `tcp://address:port`                                                                                   | No       |                                                                |
 | `STATSD_SERVER`      | Output to a statsd instance.                                                                                                                                                                     | No       | `unset`                                                        |

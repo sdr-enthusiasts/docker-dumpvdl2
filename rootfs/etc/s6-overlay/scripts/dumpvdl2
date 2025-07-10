@@ -72,28 +72,26 @@ VDLM_CMD+=($FREQ_STRING)
 # shellcheck disable=SC2154
 "${s6wrap[@]}" echo "Starting: '$VDLM_BIN" "${VDLM_CMD[*]}'"
 
-set -eo pipefail
-
-if [[ ${QUIET_LOGS,,} =~ true ]]; then
+if chk_enabled "${QUIET_LOGS}"; then
 # shellcheck disable=SC2016
-  "${s6wrap[@]}"  "$VDLM_BIN" "${VDLM_CMD[@]}" 2>&1 | \
-  stdbuf -oL sed --unbuffered '/^$/d' | \
-  stdbuf -oL awk '! /^dumpvdl2/' | \
-  stdbuf -oL awk '! /^Sampling rate set/' | \
-  stdbuf -oL awk '! /^Found \[0-9]+ device(s):/' | \
-  stdbuf -oL awk '! /^  [0-9]+/' | \
-  stdbuf -oL awk '! /^Using device [0-9]+/' | \
-  stdbuf -oL awk '! /^Found /' | \
-  stdbuf -oL awk '! /^Exact sample rate /' | \
-  stdbuf -oL awk '! /^Setting sample rate/' | \
-  stdbuf -oL awk '! /PLL not locked!$/' | \
-  stdbuf -oL awk '! /^Center frequency set/' | \
-  stdbuf -oL awk '! /^Device [#]?[0-9]+/' | \
-  stdbuf -oL awk '! /^Allocating [0-9]+ zero-copy buffers/' | \
-  stdbuf -oL awk '{print $0}'
+  FILTER_TERMS+=("-e" "\[dumpvdl2\] dumpvdl2 ")
+  FILTER_TERMS+=("-e" "Sampling rate set")
+  FILTER_TERMS+=("-e" "Found [0-9] device")
+  FILTER_TERMS+=("-e" "\[dumpvdl2\]   [0-9]:")
+  FILTER_TERMS+=("-e" "\[dumpvdl2\] $")
+  FILTER_TERMS+=("-e" "Using device [0-9]:")
+  FILTER_TERMS+=("-e" "Found .* tuner")
+  FILTER_TERMS+=("-e" "Exact sample rate is:")
+  FILTER_TERMS+=("-e" "PLL not locked")
+  FILTER_TERMS+=("-e" "Center frequency set")
+  FILTER_TERMS+=("-e" "Bandwidth set")
+  FILTER_TERMS+=("-e" "Device #[0-9]: gain set to")
+  FILTER_TERMS+=("-e" "Device [0-9] bias")
+  FILTER_TERMS+=("-e" "Device [0-9] started")
+  exec "${s6wrap[@]}" "$VDLM_BIN" "${VDLM_CMD[@]}" > >(grep --line-buffered -v "${FILTER_TERMS[@]}")
 else
   # shellcheck disable=SC2016
-  "${s6wrap[@]}" "$VDLM_BIN" "${VDLM_CMD[@]}"
+  exec "${s6wrap[@]}" "$VDLM_BIN" "${VDLM_CMD[@]}"
 fi
 
 # if we've ended up here there is a problem!
