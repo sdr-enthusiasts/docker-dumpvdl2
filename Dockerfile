@@ -78,4 +78,4 @@ RUN set -x && \
     rm -rf /src/* /tmp/* /var/lib/apt/lists/*
 
 # Add healthcheck
-HEALTHCHECK --start-period=3600s --interval=600s CMD /scripts/healthcheck.sh
+HEALTHCHECK --start-period=3600s --interval=600s CMD ["/scripts/healthcheck.sh"]
